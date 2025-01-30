@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css" media="screen,projection" />
+    <link rel="shortcut icon" href="img/IMG_6592.ico" />
+    <title>PDM</title>
+</head>
+
+<body style="background-color: #00345D;">
+
+    <div class="container">
+        <div class="row blue lighten-4" style="margin-top: 50px; padding: 10px;">
+            <p> <strong>Selecciona una imagen:</strong></p>
+            <form onchange="output.value=parseInt(foco.value)" oninput="tamFoco(foco.value)">
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>Imagen</span>
+                        <input type="file" id="imagen1" accept=".jpg,.jpeg,.png">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+                <div class="row" style="margin: 10px;"> <!--Slider-->
+                    <p> <strong>Foco </strong> <input list="tickmarks" id="radioFoco" type="range" name="foco" min="20" max="100" step="1" value="20"/></p>
+                    <p> <strong>Radio </strong>  <output id="output" value="20">20</output></p>
+                </div>
+            </form>
+        </div>
+        <div class="row center-align" style="padding: 10px;">
+            <canvas id="canvasImagen1"></canvas>
+        </div>
+        <div class="row center-align" style="padding: 10px;">
+            <canvas id="canvasImagen2"></canvas>
+        </div>
+    </div>
+    <script src="scripts/algoritmoFoco.js"></script>
+    <script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+</body>
+
+</html>

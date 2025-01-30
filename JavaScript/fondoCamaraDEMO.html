@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, 
+                   initial-scale=1.0">
+    <style>
+        body {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+          
+        video {
+            background-color: black;
+            margin-bottom: 1rem;
+        }
+          
+        #error {
+            color: red;
+            padding: 0.6rem;
+            background-color: rgb(236 157 157);
+            margin-bottom: 0.6rem;
+            display: none;
+        }
+    </style>
+    <title>GetUserMedia demo</title>
+</head>
+  
+<body>
+    <h1> WebRTC getUserMedia() demo</h1>
+    <video id='video' width="600" height="300" autoplay playsinline> Sorry, video element not supported in your browsers</video>
+    <canvas id="canvasImagen1" width="600"  height="300" ></canvas>
+    <div id="error"></div>
+    <div id="button-container">
+        <button onclick="openCamera()"> Open Camera</button>
+        <button onclick='closeCamera()'>Close Camera</button>
+    </div>
+    <script>
+        const videoElem = document.getElementById('video');
+        const errorElem = document.getElementById('error');
+        var canvas1=document.getElementById("canvasImagen1");
+        var ctx1=canvas1.getContext("2d"); 
+        let receivedMediaStream = null;
+        videoElem.hidden = true;
+        var imagenOriginal;
+        var ban=0;
+		x = 0; y = 0; band = 0; x2 = 0; y2 = 0;
+        var mascara=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+		var dim=9;
+        canvas1.addEventListener("click", manejadorRaton, false);
+        const constraints = {
+            audio: false,
+            video: true
+        }
+        function manejadorRaton(e){
+            relativeX=e.clientX-(canvas1.offsetLeft-Math.floor(window.scrollX));
+            relativeY=e.clientY-(canvas1.offsetTop-Math.floor(window.scrollY));
+            segmentacion(relativeX,relativeY);
+            ban=1;
+        }
+  
+        function openCamera() {
+            errorElem.style.display = "none";
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(mediaStream => {
+                    videoElem.srcObject = mediaStream;
+                    receivedMediaStream = mediaStream;
+                    canvas1.hidden = false;
+                    videoElem.hidden = true;
+                    window.requestAnimationFrame(updateCanvas);
+                    
+                }).catch(err => {
+                    errorElem.innerHTML = err;
+                    errorElem.style.display = "block";
+                });
+  
+        }
+
+        function updateCanvas(){
+			canvas1.width = videoElem.videoWidth;
+			canvas1.height = videoElem.videoHeight;
+			ctx1.drawImage(videoElem,0,0);
+			if(ban==1){
+				segmentacion(x,y);
+			}
+			window.requestAnimationFrame(updateCanvas);
+      	}
+
+        const closeCamera = () => {
+            ban=0;
+            if (!receivedMediaStream) {
+                errorElem.innerHTML = "Camera is already closed!";
+                errorElem.style.display = "block";
+            } 
+			else {
+                receivedMediaStream.getTracks().forEach(mediaTrack => {
+                    mediaTrack.stop();
+                    canvas1.hidden = true;
+                });
+                errorElem.innerHTML = "Camera closed successfully!"
+                errorElem.style.display = "block";
+            }
+            errorElem.hidden=false;
+
+        }
+
+
+        function segmentacion(x,y){
+			segmentacionFunction(x,y);
+		}
+
+		segmentacionFunction=function(x,y){
+			image2=ctx1.getImageData(0,0,canvas1.width,canvas1.height);
+			pixels=image2.data;
+			numPixels=image2.width*image2.height;	
+			image3=ctx1.getImageData(0,0,canvas1.width,canvas1.height);	
+			res=image3.data;			
+			for(var i=0; i<numPixels; i++){
+                            suma=(Math.abs(pixels[(y*image2.width*4)+(x*4)]-pixels[i*4]))**2;
+                            suma+=(Math.abs(pixels[(y*image2.width*4)+(x*4)+1]-pixels[i*4+1]))**2;
+                            suma+=(Math.abs(pixels[(y*image2.width*4)+(x*4)+2]-pixels[i*4+2]))**2;
+                            if(Math.sqrt(suma)>100){
+                                res[i*4]=0;
+								res[i*4+1]=0;
+								res[i*4+2]=0;
+                            }
+                            else if(Math.sqrt(suma)<=100){
+                                res[i*4]=255;
+								res[i*4+1]=255;
+								res[i*4+2]=255;
+                            }
+                            suma=0;
+                        }
+			canvas1.width=image3.width;
+			canvas1.height=image3.height;
+			ctx1.putImageData(image3,0,0);
+            erosion();
+		}
+        
+        function erosion(){
+			erosionFunction();
+		}
+
+				erosionFunction=function(){
+					aux=ctx1.getImageData(0,0,canvas1.width,canvas1.height);
+					pixels=aux.data;
+					numPixels=aux.width*aux.height;
+					var aux3=ctx1.getImageData(0,0,canvas1.width, canvas1.height);//nueva imagen
+					res = aux3.data;		
+					ban2=0;				
+					var suma0=0,suma1=0,suma2=0,suma3=0,k=0,pos=0,r,ban=0;
+					let total = mascara.reduce((a, b) => a + b, 0);
+					for(var i=0; i<aux.height; i++){//por cada pixel se hara la convulucion
+						for(var j=0; j<aux.width; j++){
+							ban2=0;
+							for(var k=0; k<dim && aux.height-i>=dim; k++){//cambio de renglones en la matriz de la imagen----inicio de la convulucion
+							    pos=(aux.width*(k+i))*4+(j*4);//cambio de renglon
+								for(var l=0; l<dim && aux.width-j>=dim; l++){//cambio de columnas ne la matriz de la imagen
+									if(pixels[pos+(l*4)]==0){
+										ban2=1;
+										ban++;
+									}
+									if(k==(dim-1)/2 && l==(dim-1)/2){
+										r=pos+(l*4);
+									}
+								}
+							}
+					
+							if(ban==81){
+								res[r]=0;
+								res[r+1]=0;
+								res[r+2]=0;
+							}
+							else if(ban2){
+								res[r]=255;
+								res[r+1]=255;
+								res[r+2]=255;
+							}
+							ban=0;
+						}
+					}
+                    resta(aux3);
+				}
+
+
+                function resta(aux3){
+					restaFunction(aux3);
+				}
+
+				restaFunction=function(aux3){
+					aux1=ctx1.getImageData(0,0,canvas1.width,canvas1.height);
+					//aux2=ctx2.getImageData(0,0,canvas2.width,canvas2.height);
+					aux2=ctx1.getImageData(0,0,canvas1.width,canvas1.height);
+					res = aux2.data;
+					pixels1=aux1.data;
+					pixels2=aux3.data;
+					numPixels=aux1.width*aux1.height;
+					for(var i=0; i<numPixels; i++){
+                        if(pixels1[i*4] != pixels2[i*4]){
+                            res[i*4]=0;
+                            res[i*4+1]=0;
+                            res[i*4+2]=0;
+                        }
+                        else{
+                            res[i*4]=255;
+                            res[i*4+1]=255;
+                            res[i*4+2]=255;
+                        }
+					}
+					canvas1.width=aux2.width;
+					canvas1.height=aux2.height;
+					ctx1.putImageData(aux2,0,0);
+				}
+    </script>
+</body>
+  
+</html>

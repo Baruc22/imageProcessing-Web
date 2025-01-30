@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css" media="screen,projection" />
+    <link rel="shortcut icon" href="img/IMG_6592.ico" />
+    <title>PDM</title>
+</head>
+
+<body style="background-color: #00345D;">
+
+    <div class="container">
+        <div class="row blue lighten-4" style="margin-top: 50px; padding: 10px;">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field col s3">
+                        <input id="X" type="tel" class="validate">
+                        <label for="X" style="color: black;"> <strong>X</strong></label>
+                    </div>
+                    <div class="input-field col s3">
+                        <input id="Y" type="tel" class="validate">
+                        <label for="Y" style="color: black;"><strong>Y</strong></label>
+                    </div>
+                </div>
+                <div class="row"> <!-- Boton para capturar x y-->
+                    <input class="waves-effect waves-light btn" type="button" value="Valores X,Y" onclick="valoresXY()">
+                </div>
+                <p> <strong>Selecciona una imagen:</strong></p>
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>Imagen</span>
+                        <input type="file" id="imagen1" accept=".jpg,.jpeg,.png">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row center-align" style="padding: 10px;">
+            <canvas id="canvasImagen1"></canvas>
+        </div>
+        <div class="row center-align" style="padding: 10px;">
+            <canvas id="canvasImagen2"></canvas>
+        </div>
+    </div>
+    <script src="scripts/algoritmoDesplazo.js"></script>
+    <script src="jQuery/jquery-3.6.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('input#input_text, textarea#textarea2').characterCounter();
+        });
+    </script>
+    <script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+</body>
+
+</html>

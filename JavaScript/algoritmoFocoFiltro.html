@@ -1,0 +1,53 @@
+n<!DOCTYPE html>
+<html>
+
+<head>
+    <link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css" media="screen,projection" />
+    <link rel="shortcut icon" href="img/IMG_6592.ico" />
+    <title>PDM</title>
+</head>
+
+<body style="background-color: #00345D;">
+
+    <div class="container">
+        <div class="row blue lighten-4" style="margin-top: 50px; padding: 10px;">
+            <form class="col s12" onchange="output.value=parseInt(foco.value)" oninput="cambioFoco(foco.value)">
+                <div class="row center-align">
+                    <p> <strong>Máscara del filtro:</strong></p> <!--Entrada de la masacara-->
+                    <textarea name="textarea" id="mascara" rows="20" cols="20" style="width: 100px; height: 100px; background-color: #FFC882; font-size: 18px;"></textarea>
+                </div>
+                <div class="row center-align"> <!-- Boton de capturad mascara-->
+                    <input class="waves-effect waves-light btn" type="button" value="Cargar Máscara" onclick="textArea()">
+                </div>
+                <p> <strong>Seleccionar imagen:</strong></p>
+                <div class="file-field input-field">
+                    <div class="btn"> <!--Lectura de la imagen-->
+                        <span>Imagen</span>
+                        <input type="file" id="imagen1" accept=".jpg,.jpeg,.png">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+                <div class="row" style="margin: 10px;"> <!--Slider-->
+                    <p> <strong>Radio</strong> <input list="tickmarks" id="radio" type="range" name="foco" min="50" max="100" step="1" value="10"/></p>
+                    <p> <strong>Valor del radio </strong>  <output id="output" value="10">10</output></p>
+                </div>                
+                <div class="row center-align">
+                    <input class="waves-effect waves-light btn" type="button" value="Actualizar" onclick="location.reload()"/>
+                </div>
+            </form>
+        </div>
+        <div class="row center-align" style="padding: 10px;">
+            <canvas id="canvasImagen1"></canvas>
+        </div>
+        <div class="row center-align" style="padding: 10px;">
+            <canvas id="canvasImagen2"></canvas>
+        </div>
+    </div>
+    <script src="scripts/algoritmoFocoFiltro.js"></script>
+    <script src="jQuery/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+</body>
+
+</html>
